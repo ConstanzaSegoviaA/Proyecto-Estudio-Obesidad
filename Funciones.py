@@ -2,18 +2,7 @@ import pandas as pd
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
-import requests
-from sklearn.metrics import confusion_matrix
-from sklearn.model_selection import train_test_split
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
-from sklearn.preprocessing import MinMaxScaler, StandardScaler
-from sklearn.metrics import mean_absolute_error
-from sklearn.metrics import root_mean_squared_error
-from sklearn.metrics import mean_squared_error
-from sklearn.tree import DecisionTreeClassifier, export_graphviz
-import graphviz
-
+import plotly.express as px
 
 def explorar_df(df):
     print(df.info())
@@ -51,14 +40,12 @@ def categorico(df,col):
     print(df[col].value_counts())
     print(df[col].unique())
     print(df[col].nunique())
-    
 
 def numerico(df,col):
     """Realiza un análisis descriptivo de una columna numérica."""
     print(df[col].describe())
     print(df[col].isnull().sum())
     print(df[col].nunique())
-    
 
 def filtrar_fila(df,col,lista):
     return df[df[col].isin(lista)]
@@ -70,12 +57,10 @@ def completar_nulos(df,col,valor):
 def estadisticos(df):
     print(df.describe())
     print(df.select_dtypes(include=["number"]).describe())
-    
 
 def ver_nulos(df):
     df_con_nulos = df[df.isnull().any(axis=1)]
     display(df_con_nulos)
-
 
 def ver_duplicados(df):
     df_duplicados = df[df.duplicated()]
@@ -135,36 +120,6 @@ def traspaso_estudio(df):
         df_estudio[col] = df_estudio[col].map({ 'Peso insuficiente': 0,'Peso normal': 1, 'Sobrepeso nivel I': 2, 'Sobrepeso nivel II': 3, 'Obesidad tipo I': 4, 'Obesidad tipo II': 5, 'Obesidad tipo III': 6})
     return df_estudio
 
-def estudio(df,col,n):
-    # estudio de la variable a predecir
-    X = df.drop(col, axis=1)
-    y = df[col]
-    
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=0)
-    
-    knn = KNeighborsClassifier(n_neighbors=n)
-    knn.fit(X_train, y_train)
-    
-    y_pred = knn.predict(X_test)
-    print("Accuracy:")
-    
-    accuracy = knn.score(X_test, y_test) # accuracy
-    print(accuracy)
-    # precision
-    print("Precision:")
-    print(precision_score(y_test,y_pred, average='macro'))
-    
-    # recall
-    print("Recall:")
-    print(recall_score(y_test,y_pred, average='macro'))
-    
-    # F1-score
-    print("F1-score:")
-    print(f1_score(y_test, y_pred, average='macro'))
-    
-    print("Confusion Matrix:")
-    print(confusion_matrix(y_test, y_pred))
-
 def corr_heatmap(df):
     corr=np.abs(df.corr())
     # Set up mask for triangle representation
@@ -177,7 +132,7 @@ def corr_heatmap(df):
     # Draw the heatmap with the mask and correct aspect ratio
     sns.heatmap(corr, mask=mask,  vmax=1,square=True, linewidths=.5, cbar_kws={"shrink": .5},annot = corr)
     return plt.show()
-    
+
 def cambiar(df):
     # Convertiremos las columnas de A veces/Con frecuencia/Siempre a 0/1/2/3
     columnas_aveces = ['CALC', 'CAEC']
@@ -189,64 +144,7 @@ def cambiar(df):
         df[col] = df[col].map({ 'Peso insuficiente': 0,'Peso normal': 1, 'Sobrepeso nivel I': 2, 'Sobrepeso nivel II': 3, 'Obesidad tipo I': 4, 'Obesidad tipo II': 5, 'Obesidad tipo III': 6})
     return df
 
-def arbol(df, col):
-    X = df.drop(col, axis=1)
-    y = df[col]
-    
-    # División de datos
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
-    
-    # Normalización
-    normalizer = MinMaxScaler()
-    X_train_norm = normalizer.fit_transform(X_train)
-    X_test_norm = normalizer.transform(X_test)
-    
-    # Entrenamiento
-    tree = DecisionTreeRegressor(max_depth=10, random_state=0)
-    tree.fit(X_train_norm, y_train)
-    
-    # Predicción
-    pred = tree.predict(X_test_norm)
-    
-    # Métricas (Corregido 'y_pred' por 'pred')
-    print("MAE:", mean_absolute_error(y_test, pred))
-    rmse = np.sqrt(mean_squared_error(y_test, pred))
-    print("RMSE:", rmse)
-    print("R2 score:", tree.score(X_test_norm, y_test))
-    
-    # Importancia de variables
-    tree_importance = {feature: importance for feature, importance in zip(X.columns, tree.feature_importances_)}
-    
-    return tree, tree_importance   
-
-def normalizar(df,col):
-    # estudio de la variable a predecir
-    X = df.drop(col, axis=1)
-    y = df[col]
-    
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=0)
-    
-    normalizer = MinMaxScaler()
-    normalizer.fit(X_train)
-    X_train_norm = normalizer.transform(X_train)
-    X_test_norm = normalizer.transform(X_test)
-    
-    X_train_norm = pd.DataFrame(X_train_norm, columns = X_train.columns)
-    X_test_norm = pd.DataFrame(X_test_norm, columns = X_test.columns)
-    
-    return X_train_norm, X_test_norm, y_train, y_test
-
-
-def dibujo(df, col):
-    X = df.drop(col, axis=1)
-    y = df[col]
-    
-    tree = DecisionTreeClassifier(max_depth=5, random_state=0)
-    tree.fit(X, y)
-    
-    dot_data = export_graphviz(tree, out_file=None, 
-                        filled=True, 
-                        rounded=True, 
-                        feature_names=X.columns,  
-                        class_names=[str(c) for c in tree.classes_]) 
-    return graphviz.Source(dot_data)
+def volver(df,col):
+    for col in nivel_obesidad:
+        df[col] = df[col].map({ 0:'Peso insuficiente',1:'Peso normal', 2:'Sobrepeso nivel I', 3:'Sobrepeso nivel II', 4:'Obesidad tipo I', 5:'Obesidad tipo II', 6:'Obesidad tipo III'})
+    return df
