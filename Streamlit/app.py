@@ -111,7 +111,7 @@ if seccion == "Elección de las carácteristicas y técnicas":
     col1, col2 = st.columns(2)
     with col1:
         st.subheader("Correlación entre variables")
-        df = pd.read_csv('ObesityDataSet_clean.csv')
+        df = pd.read_csv('Streamlit/ObesityDataSet_clean.csv')
         df_nuevo=f.traspaso_estudio(df)
         corr=np.abs(df_nuevo.corr())
         # Set up mask for triangle representation
