@@ -14,7 +14,7 @@ def cargar_datos():
     return df
 
 # --- NAVEGACIÓN LATERAL ---
-st.logo("imagen.png")
+st.logo("Streamlit/imagen.png")
 st.sidebar.title("Navegación")
 seccion = st.sidebar.radio("Ir a:", ["Introducción",
                                     "Presentación de Datos",
@@ -48,7 +48,7 @@ if seccion == "Introducción":
     with col2:
         st.subheader("¿Por qué es importante prevenirla?")
         st.write("La obesidad está asociada con un mayor riesgo de enfermedades crónicas como diabetes, hipertensión y enfermedades cardíacas.")
-    st.image("imagen2.png")
+    st.image("Streamlit/imagen2.png")
     
     col1, col2 = st.columns(2)
     with col1:
@@ -149,7 +149,7 @@ if seccion == "Modelo de elección":
 
     with col1:
         st.write("Se decidió usar el modelo de gradient boosting Classifier")
-        st.image("gradient.png")
+        st.image("Streamlit/gradient.png")
         
     with col2:
         st.write("¿En que consiste?")
@@ -182,7 +182,7 @@ if seccion == "Ajuste de Parámetros":
     st.dataframe(df_modelos, hide_index=True)
     st.divider()
     
-    st.image("matriz.png")
+    st.image("Streamlit/matriz.png")
     
     col1, col2 = st.columns(2)
     
@@ -266,6 +266,7 @@ elif seccion == "Cuestionario de Salud":
         }
         prediccion_etiquetada = mapeo[prediccion[0]]
         st.write(f"El nivel de obesidad es: {prediccion_etiquetada}")
+        st.image("Streamlit/logo.png")
 
 # --- SECCIÓN 7: APPLICACIÓN AL MUNDO REAL ---
 if seccion == "Aplicación al mundo real":
@@ -275,11 +276,11 @@ if seccion == "Aplicación al mundo real":
     with col1:
         st.write("Se puede aplicar este modelo para que las personas tomen conciencia de su nivel de obesidad, asi puedan mejorar su salud "   
             "y prevenir enfermedades relacionadas con el sobrepeso.")
-        st.image("sillon.png")
+        st.image("Streamlit/sillon.png")
     with col2:
         st.write("En colegios, institutos y universidades para que los jóvenes tomen conciencia de su nivel de obesidad y mejorar sus hábitos "
                     "alimenticios y de condición física.")
-        st.image("joven.jpg")
+        st.image("Streamlit/joven.jpg")
 
 # --- SECCIÓN 8: DESAFIOS Y APRENDIZAJES ---
 if seccion == "Desafios y aprendizajes":
@@ -287,7 +288,7 @@ if seccion == "Desafios y aprendizajes":
     
     col1, col2 = st.columns(2)
     
-    st.image("imagen.png")
+    st.image("Streamlit/imagen.png")
     st.divider()
     
     with col1:
@@ -309,10 +310,10 @@ if seccion == "Motivación":
     
     col1, col2 = st.columns(2)
     with col1:
-        st.image("logo.png")
+        st.image("Streamlit/logo.png")
         st.write("Incentivar a las personas que tomen conciencia de su nivel de obesidad, mejorando sus hábitos alimenticios.")
     with col2:
-        st.image("carrera.png")
+        st.image("Streamlit/carrera.png")
         st.write("Crear intancias en familia, para potenciar la actividad física.")
     
     
