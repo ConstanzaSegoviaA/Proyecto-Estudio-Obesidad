@@ -109,6 +109,8 @@ Variables de las columnas:
 En este notebook `Proyecto_Obesidad.ipynb` contiene todo el trabajo de análisis previo, limpieza, para poder generar el data set para entrenar el modelo machine learning. Se adecuando variables se usan técnicas de Label encoding y feature scaling para que el modelo pueda entrenar correctamente. Se eliminan variables con correlación inferiores quedando solo con 13 de ellas. Luego se hace un estudio de los diferentes modelos de machine learning para poder encontrar el mejor modelo para predecir el nivel de obesidad. Utilizando KNN, Logistic Regression, Random Forest, Decision Tree , AdaBoost, bagging, pasting y Gradient Boosting. 
 Un vez vistos su porcentajes de accuracy, f1-score y precision se elige el Gradient Boosting para entrenar el modelo final. Y crear un modelo robusto encontrando los mejores parámetros usando GridSearchCV y RandomSearchCV. Se prueban en diferentes modelos llegando a los mejores parámetros con Gradient Boosting.
 
+![alt text](arbol.png)
+
 Finalmente se generan el modelo final creando un archivo .pkl del escalador, del entrenamiento y del nuevo modelo. Esto para ser usado nuevamente en datos nuevos y hacer de manera correcta la predicción del nivel de obesidad.
 Se hacer pruebas y se llega al nivel del 97% de accuracy y un f1-score del 96%.
 
@@ -121,6 +123,8 @@ Se hacer pruebas y se llega al nivel del 97% de accuracy y un f1-score del 96%.
 
 Primero se analizaron los datos demográficos obteniendo una muestra equitativa de hombres (50.4%) y mujeres (49.6%). Además los datos se encuentran homogeneos respecto a los 7 niveles de obesidad del estudio a predecir que son:  "Peso insuficiente", "Peso normal", "Sobrepeso nivel I", "Sobrepeso nivel II", "Obesidad tipo I", "Obesidad tipo II", "Obesidad tipo III".
 
+![alt text](datos.png)
+
 ![alt text](distribucion.png)
 
 
@@ -130,7 +134,7 @@ Se puede observar a través de la matriz de correlación que las variables que t
 - fuma (¿Fuma o no fuma?)
 Por lo que estas variables no son relevantes y son sacadas del entrenamiento del modelo y del estudio.
 
-
+![alt text](matrizcorr.png)
 
 Se tienen variables categóricas y variables numéricas se decidió usar las técnicas de:
 - Label encoding para transformar las variables categóricas en numéricas.
