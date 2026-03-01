@@ -248,9 +248,9 @@ elif seccion == "Cuestionario de Salud":
         for col in columnas_transporte:
             input_data[col] = input_data[col].map({"transporte público": 0, "automóvil": 1, "a pie": 2, "motocicleta": 3, "bicicleta": 4})
         
-        modelo = joblib.load('prediccion_obesidad.pkl')
-        scaler = joblib.load('mi_escalador_entrenado.pkl')
-        cols_modelo = joblib.load('columnas_modelo.pkl')
+        modelo = joblib.load('Streamlit/prediccion_obesidad.pkl')
+        scaler = joblib.load('Streamlit/mi_escalador_entrenado.pkl')
+        cols_modelo = joblib.load('Streamlit/columnas_modelo.pkl')
         
         X_nuevos = input_data.copy()
         X_nuevos[cols_modelo] = scaler.transform(X_nuevos[cols_modelo])
