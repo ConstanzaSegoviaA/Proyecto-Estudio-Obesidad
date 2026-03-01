@@ -144,7 +144,16 @@ def cambiar(df):
         df[col] = df[col].map({ 'Peso insuficiente': 0,'Peso normal': 1, 'Sobrepeso nivel I': 2, 'Sobrepeso nivel II': 3, 'Obesidad tipo I': 4, 'Obesidad tipo II': 5, 'Obesidad tipo III': 6})
     return df
 
-def volver(df,col):
-    for col in nivel_obesidad:
-        df[col] = df[col].map({ 0:'Peso insuficiente',1:'Peso normal', 2:'Sobrepeso nivel I', 3:'Sobrepeso nivel II', 4:'Obesidad tipo I', 5:'Obesidad tipo II', 6:'Obesidad tipo III'})
+def volver(df, col):
+    mapeo = {
+        0: 'Peso insuficiente',
+        1: 'Peso normal',
+        2: 'Sobrepeso nivel I',
+        3: 'Sobrepeso nivel II',
+        4: 'Obesidad tipo I',
+        5: 'Obesidad tipo II',
+        6: 'Obesidad tipo III'
+    }
+    
+    df[col] = df[col].map(mapeo)
     return df

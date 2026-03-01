@@ -10,7 +10,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import AdaBoostClassifier, BaggingClassifier, GradientBoostingClassifier
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import RandomizedSearchCV
+from sklearn.model_selection import RandomizedSearchCV, GridSearchCV
 
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
 
@@ -36,7 +36,7 @@ def arbol(df, col, n):
     pred = tree.predict(X_test)
     
     print("Accuracy:")
-    accuracy = tree.score(X_test, y_test) # accuracy
+    accuracy = accuracy_score(y_test, pred) # accuracy
     print(accuracy)
     # precision
     print("Precision:")
@@ -98,22 +98,47 @@ def baggin(df,col,n,m):
     
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=0)
     
-    normalizer = MinMaxScaler()
-    normalizer.fit(X_train)
-    X_train_norm = normalizer.transform(X_train)
-    X_test_norm = normalizer.transform(X_test)
-    
-    X_train_norm = pd.DataFrame(X_train_norm, columns = X_train.columns)
-    X_test_norm = pd.DataFrame(X_test_norm, columns = X_test.columns)
     bagging_cla = BaggingClassifier(DecisionTreeClassifier(max_depth=20), 
                             n_estimators=n, # número arboles
                             max_samples = m) # número filas data set para entrenar cada modelo
-    bagging_cla.fit(X_train_norm, y_train)
+    bagging_cla.fit(X_train, y_train)
     
-    pred = bagging_cla.predict(X_test_norm)
+    pred = bagging_cla.predict(X_test)
     
     print("Accuracy:")
-    accuracy = bagging_cla.score(X_test, y_test) # accuracy
+    accuracy = accuracy_score(y_test, pred) # accuracy
+    print(accuracy)
+    # precision
+    print("Precision:")
+    print(precision_score(y_test,pred, average='macro'))
+    
+    # recall
+    print("Recall:")
+    print(recall_score(y_test,pred, average='macro'))
+    
+    # F1-score
+    print("F1-score:")
+    print(f1_score(y_test, pred, average='macro'))
+    
+    print("Confusion Matrix:")
+    print(confusion_matrix(y_test, pred))
+
+def pasting(df,col,n,m):
+    # estudio de la variable a predecir
+    X = df.drop(col, axis=1)
+    y = df[col]
+    
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=0)
+    
+    bagging_cla = BaggingClassifier(DecisionTreeClassifier(max_depth=20), 
+                            n_estimators=n, # número arboles
+                            max_samples = m, bootstrap = False) # número filas data set para entrenar cada modelo
+    bagging_cla.fit(X_train, y_train)
+    
+    pred = bagging_cla.predict(X_test)
+    
+    print("Accuracy:")
+    accuracy = accuracy_score(y_test, pred) # accuracy
     print(accuracy)
     # precision
     print("Precision:")
@@ -137,21 +162,14 @@ def random_forest(df,col,n,m):
     
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=0)
     
-    normalizer = MinMaxScaler()
-    normalizer.fit(X_train)
-    X_train_norm = normalizer.transform(X_train)
-    X_test_norm = normalizer.transform(X_test)
-    
-    X_train_norm = pd.DataFrame(X_train_norm, columns = X_train.columns)
-    X_test_norm = pd.DataFrame(X_test_norm, columns = X_test.columns)
     forest = RandomForestClassifier(n_estimators=n,
                             max_depth=m)
-    forest.fit(X_train_norm, y_train)
+    forest.fit(X_train, y_train)
     
-    pred = forest.predict(X_test_norm)
+    pred = forest.predict(X_test)
     
     print("Accuracy:")
-    accuracy = forest.score(X_test, y_test) # accuracy
+    accuracy = accuracy_score(y_test, pred) # accuracy
     print(accuracy)
     # precision
     print("Precision:")
@@ -175,22 +193,25 @@ def adaBoost(df,col,n,m):
     
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=0)
     
-    normalizer = MinMaxScaler()
-    normalizer.fit(X_train)
-    X_train_norm = normalizer.transform(X_train)
-    X_test_norm = normalizer.transform(X_test)
+    scaler = StandardScaler()
     
-    X_train_norm = pd.DataFrame(X_train_norm, columns = X_train.columns)
-    X_test_norm = pd.DataFrame(X_test_norm, columns = X_test.columns)
+    # Identificar columnas numéricas (las que no son dummies de 0 y 1)
+    cols_a_escalar = X_train.select_dtypes(include=['float64', 'int64']).columns
+    
+    X_train_scaled = X_train.copy()
+    X_test_scaled = X_test.copy()
+    
+    X_train_scaled[cols_a_escalar] = scaler.fit_transform(X_train[cols_a_escalar])
+    X_test_scaled[cols_a_escalar] = scaler.transform(X_test[cols_a_escalar])
     
     ada_cl = AdaBoostClassifier(DecisionTreeClassifier(max_depth=n),
                             n_estimators=m)
-    ada_cl.fit(X_train_norm, y_train)
+    ada_cl.fit(X_train_scaled, y_train)
     
-    pred = ada_cl.predict(X_test_norm)
+    pred = ada_cl.predict(X_test_scaled)
     
     print("Accuracy:")
-    accuracy = ada_cl.score(X_test, y_test) # accuracy
+    accuracy = accuracy_score(y_test, pred) # accuracy
     print(accuracy)
     # precision
     print("Precision:")
@@ -214,22 +235,25 @@ def gradient_boost(df,col,n,m):
     
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=0)
     
-    normalizer = MinMaxScaler()
-    normalizer.fit(X_train)
-    X_train_norm = normalizer.transform(X_train)
-    X_test_norm = normalizer.transform(X_test)
+    scaler = StandardScaler()
     
-    X_train_norm = pd.DataFrame(X_train_norm, columns = X_train.columns)
-    X_test_norm = pd.DataFrame(X_test_norm, columns = X_test.columns)
+    # Identificar columnas numéricas (las que no son dummies de 0 y 1)
+    cols_a_escalar = X_train.select_dtypes(include=['float64', 'int64']).columns
+    
+    X_train_scaled = X_train.copy()
+    X_test_scaled = X_test.copy()
+    
+    X_train_scaled[cols_a_escalar] = scaler.fit_transform(X_train[cols_a_escalar])
+    X_test_scaled[cols_a_escalar] = scaler.transform(X_test[cols_a_escalar])
     
     gb_cla= GradientBoostingClassifier(max_depth=n,
                                 n_estimators=m)
-    gb_cla.fit(X_train_norm, y_train)
+    gb_cla.fit(X_train_scaled, y_train)
     
-    pred = gb_cla.predict(X_test_norm)
+    pred = gb_cla.predict(X_test_scaled)
     
     print("Accuracy:")
-    accuracy = gb_cla.score(X_test, y_test) # accuracy
+    accuracy = accuracy_score(y_test, pred) # accuracy
     print(accuracy)
     # precision
     print("Precision:")
@@ -246,28 +270,31 @@ def gradient_boost(df,col,n,m):
     print("Confusion Matrix:")
     print(confusion_matrix(y_test, pred))
 
-def logi_reg(df,col,n,m):
+def logi_reg(df,col):
     # estudio de la variable a predecir
     X = df.drop(col, axis=1)
     y = df[col]
     
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=0)
     
-    normalizer = MinMaxScaler()
-    normalizer.fit(X_train)
-    X_train_norm = normalizer.transform(X_train)
-    X_test_norm = normalizer.transform(X_test)
+    scaler = StandardScaler()
     
-    X_train_norm = pd.DataFrame(X_train_norm, columns = X_train.columns)
-    X_test_norm = pd.DataFrame(X_test_norm, columns = X_test.columns)
+    # Identificar columnas numéricas (las que no son dummies de 0 y 1)
+    cols_a_escalar = X_train.select_dtypes(include=['float64', 'int64']).columns
+    
+    X_train_scaled = X_train.copy()
+    X_test_scaled = X_test.copy()
+    
+    X_train_scaled[cols_a_escalar] = scaler.fit_transform(X_train[cols_a_escalar])
+    X_test_scaled[cols_a_escalar] = scaler.transform(X_test[cols_a_escalar])    
     
     model = LogisticRegression()
-    model.fit(X_train_norm, y_train)
-
-    pred = model.predict(X_test_norm)  
+    model.fit(X_train_scaled, y_train)
+    
+    pred = model.predict(X_test_scaled)
     
     print("Accuracy:")
-    accuracy = model.score(X_test, y_test) # accuracy
+    accuracy = accuracy_score(y_test, pred)
     print(accuracy)
     # precision
     print("Precision:")
@@ -297,7 +324,7 @@ def knn(df,col,n):
     y_pred = knn.predict(X_test)
     print("Accuracy:")
     
-    accuracy = knn.score(X_test, y_test) # accuracy
+    accuracy = accuracy_score(y_test, y_pred) # accuracy
     print(accuracy)
     # precision
     print("Precision:")
@@ -319,12 +346,6 @@ def estandar_knn(df, col, n):
     X = df.drop(col, axis=1)
     y = df[col]
     
-    # 2. Codificar el Target (nivel_obesidad) a números si es texto
-    if y.dtype == 'object':
-        le = LabelEncoder()
-        y = le.fit_transform(y)
-    
-    # 3. Split
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=0)
     
     # 4. ESCALADO (Vital para KNN)
@@ -354,37 +375,33 @@ def estandar_knn(df, col, n):
     print(f"F1-score:  {f1_score(y_test, y_pred, average='macro'):.4f}")
     print("\nConfusion Matrix:")
     print(confusion_matrix(y_test, y_pred))
-    
-    return model
 
-def optimizar_arbol(df, col, n_iter=20):
+def optimizar_arbol(df, col, n):
     # Preparación de datos
     X = df.drop(col, axis=1)
     y = df[col]
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
 
     # Definir el espacio de búsqueda de parámetros
-    param_dist = {
+    param_grid = {
         'criterion': ['gini', 'entropy'],
-        'max_depth': [None, 3, 5, 10, 15, 20],
-        'min_samples_split': [2, 5, 10],
-        'min_samples_leaf': [1, 2, 4],
+        'max_depth': [6, 10, 23, 41],
+        'min_samples_split': [1, 2, 3],
+        'min_samples_leaf': [1, 2],
         'class_weight': [None, 'balanced'] # Útil para las 7 categorías si están desbalanceadas
     }
 
     # Configurar la búsqueda aleatoria
-    search = RandomizedSearchCV(
-        estimator=DecisionTreeClassifier(random_state=0),
-        param_distributions=param_dist,
-        n_iter=n_iter,
-        cv=5,
+    search = GridSearchCV(
+        estimator=DecisionTreeClassifier(),
+        param_grid=param_grid,
+        cv=n,
         scoring='f1_macro',
-        random_state=0,
         n_jobs=-1 # Usa todos los núcleos de tu procesador para ir más rápido
     )
 
     # Ajustar el modelo
-    print("Buscando los mejores parámetros... (esto puede tardar un poco)")
+    print(f"Buscando con GridSearchCV...")
     search.fit(X_train, y_train)
     
     # Evaluación con el mejor modelo encontrado
@@ -405,7 +422,7 @@ def optimizar_arbol(df, col, n_iter=20):
     print(confusion_matrix(y_test, pred))
     
     print("Accuracy:")
-    accuracy = best_tree.score(X_test, y_test) # accuracy
+    accuracy = accuracy_score(y_test, pred) # accuracy
     print(accuracy)
     # precision
     print("Precision:")
@@ -418,11 +435,68 @@ def optimizar_arbol(df, col, n_iter=20):
     # F1-score
     print("F1-score:")
     print(f1_score(y_test, pred, average='macro'))
+
+def randomizar_arbol(df, col, n):
+    # Preparación de datos
+    X = df.drop(col, axis=1)
+    y = df[col]
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
+
+    # Definir el espacio de búsqueda de parámetros
+    param_dist = {
+        'criterion': ['gini', 'entropy'],
+        'max_depth': [int(x) for x in np.linspace(start = 10, stop = 50, num = 10)],
+        'min_samples_split': [int(x) for x in np.linspace(start = 2, stop = 10, num = 10)],
+        'min_samples_leaf': [int(x) for x in np.linspace(start = 1, stop = 10, num = 10)],
+        'class_weight': [None, 'balanced'] # Útil para las 7 categorías si están desbalanceadas
+    }
+
+    # Configurar la búsqueda aleatoria
+    search = RandomizedSearchCV(
+        estimator=DecisionTreeClassifier(random_state=0),
+        param_distributions=param_dist,
+        n_iter=n,
+        cv=5,
+        scoring='f1_macro',
+        random_state=0,
+        n_jobs=-1 # Usa todos los núcleos de tu procesador para ir más rápido
+    )
+
+    # Ajustar el modelo
+    print(f"Buscando los mejores parámetroscon {n} combinaciones...")
+    search.fit(X_train, y_train)
     
-    print("Confusion Matrix:")
+    # Evaluación con el mejor modelo encontrado
+    best_tree = search.best_estimator_
+    pred = best_tree.predict(X_test)
+
+    # Reporte de resultados
+    print("\n" + "="*30)
+    print("MEJORES PARÁMETROS ENCONTRADOS:")
+    print(search.best_params_)
+    print("="*30)
+    
+    print("\nREPORTE DE CLASIFICACIÓN (7 Categorías):")
+    # El classification_report es mejor para multiclase porque da detalle por categoría
+    print(classification_report(y_test, pred))
+    
+    print("MATRIZ DE CONFUSIÓN:")
     print(confusion_matrix(y_test, pred))
     
-    return best_tree
+    print("Accuracy:")
+    accuracy = accuracy_score(y_test, pred) # accuracy
+    print(accuracy)
+    # precision
+    print("Precision:")
+    print(precision_score(y_test,pred, average='macro'))
+    
+    # recall
+    print("Recall:")
+    print(recall_score(y_test,pred, average='macro'))
+    
+    # F1-score
+    print("F1-score:")
+    print(f1_score(y_test, pred, average='macro'))
 
 def optimizar_forest(df, col_objetivo, n):
     # Preparación de datos
@@ -431,16 +505,75 @@ def optimizar_forest(df, col_objetivo, n):
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
 
     # Espacio de búsqueda específico para Random Forest
+    param_grid = {
+        'n_estimators': [32, 40, 45, 50], # Número de árboles en el bosque
+        'max_depth': [1500, 1888, 2000, 3000],
+        'min_samples_split': [2, 4, 6],
+        'min_samples_leaf': [1, 2],
+        'bootstrap': [True, False],           # Método de selección de muestras
+        'max_features': ['sqrt', 'log2']      # Cantidad de variables por árbol
+    }
+    
+    # RandomForest es más pesado, n_jobs=-1 es fundamental aquí
+    search = GridSearchCV(
+        estimator=RandomForestClassifier(),
+        param_grid=param_grid,
+        cv=n,                
+        scoring='f1_macro',   # Ideal para 7 categorías
+        n_jobs=-1
+    )
+
+    # Ajustar el modelo
+    print(f"Entrenando con GridSearchCV...")
+    search.fit(X_train, y_train)
+    
+    # Evaluación
+    best_forest = search.best_estimator_
+    pred = best_forest.predict(X_test)
+
+    # Reporte de resultados
+    print("\n" + "="*35)
+    print("MEJORES PARÁMETROS:")
+    print(search.best_params_)
+    print("="*35)
+    
+    print("\nREPORTE DE CLASIFICACIÓN:")
+    print(classification_report(y_test, pred))
+    
+    print("MATRIZ DE CONFUSIÓN:")
+    print(confusion_matrix(y_test, pred))
+
+    print("Accuracy:")
+    accuracy = accuracy_score(y_test, pred) # accuracy
+    print(accuracy)
+    # precision
+    print("Precision:")
+    print(precision_score(y_test,pred, average='macro'))
+    
+    # recall
+    print("Recall:")
+    print(recall_score(y_test,pred, average='macro'))
+    
+    # F1-score
+    print("F1-score:")
+    print(f1_score(y_test, pred, average='macro'))
+
+def randomizar_forest(df, col_objetivo,n):
+    # Preparación de datos
+    X = df.drop(col_objetivo, axis=1)
+    y = df[col_objetivo]
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
+
+    # Espacio de búsqueda específico para Random Forest
     param_dist = {
-        'n_estimators': [100, 200, 300, 500], # Número de árboles en el bosque
-        'max_depth': [None, 10, 20, 30],
-        'min_samples_split': [2, 5, 10],
-        'min_samples_leaf': [1, 2, 4],
+        'n_estimators': [int(x) for x in np.linspace(start = 10, stop = 50, num = 10)], # Número de árboles en el bosque
+        'max_depth': [int(x) for x in np.linspace(start = 500, stop = 3000, num = 10)],
+        'min_samples_split': [int(x) for x in np.linspace(start = 1, stop = 10, num = 10)],
+        'min_samples_leaf': [int(x) for x in np.linspace(start = 1, stop = 10, num = 10)],
         'bootstrap': [True, False],           # Método de selección de muestras
         'max_features': ['sqrt', 'log2']      # Cantidad de variables por árbol
     }
 
-    # 3. Configurar RandomizedSearchCV
     # RandomForest es más pesado, n_jobs=-1 es fundamental aquí
     search = RandomizedSearchCV(
         estimator=RandomForestClassifier(random_state=0),
@@ -452,15 +585,15 @@ def optimizar_forest(df, col_objetivo, n):
         n_jobs=-1
     )
 
-    # 4. Ajustar el modelo
+    # Ajustar el modelo
     print(f"Entrenando Random Forest con {n} combinaciones...")
     search.fit(X_train, y_train)
     
-    # 5. Evaluación
+    # Evaluación
     best_forest = search.best_estimator_
     pred = best_forest.predict(X_test)
 
-    # 6. Reporte de resultados
+    # Reporte de resultados
     print("\n" + "="*35)
     print("MEJORES PARÁMETROS RANDOM FOREST:")
     print(search.best_params_)
@@ -473,7 +606,7 @@ def optimizar_forest(df, col_objetivo, n):
     print(confusion_matrix(y_test, pred))
 
     print("Accuracy:")
-    accuracy = best_forest.score(X_test, y_test) # accuracy
+    accuracy = accuracy_score(y_test, pred) # accuracy
     print(accuracy)
     # precision
     print("Precision:")
@@ -486,9 +619,132 @@ def optimizar_forest(df, col_objetivo, n):
     # F1-score
     print("F1-score:")
     print(f1_score(y_test, pred, average='macro'))
-    
-    print("Confusion Matrix:")
-    print(confusion_matrix(y_test, pred))
-    
-    return best_forest, importancias
 
+def optimizar_gradient(df,col,n):
+    # estudio de la variable a predecir
+    X = df.drop(col, axis=1)
+    y = df[col]
+    
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=0)
+    
+    scaler = StandardScaler()
+    
+    # Identificar columnas numéricas (las que no son dummies de 0 y 1)
+    cols_a_escalar = X_train.select_dtypes(include=['float64', 'int64']).columns
+    
+    X_train_scaled = X_train.copy()
+    X_test_scaled = X_test.copy()
+    
+    X_train_scaled[cols_a_escalar] = scaler.fit_transform(X_train[cols_a_escalar])
+    X_test_scaled[cols_a_escalar] = scaler.transform(X_test[cols_a_escalar])
+    
+    # Definir el "Grid" de parámetros a probar
+    param_grid = {
+        'max_depth': [3, 5, 7],
+        'n_estimators': [100, 200, 300],
+        'learning_rate': [0.01, 0.1, 0.2]
+    }
+
+    # Configurar la búsqueda
+    gb = GradientBoostingClassifier()
+    grid_search = GridSearchCV(estimator=gb, param_grid=param_grid, 
+                            cv=n, scoring='accuracy', n_jobs=-1)
+    
+    # Ejecutar la optimización
+    grid_search.fit(X_train_scaled, y_train)
+    
+    # El mejor modelo encontrado
+    best_model = grid_search.best_estimator_
+    
+    # predicción
+    pred = best_model.predict(X_test_scaled)
+    # Reporte de resultados
+    print("\n" + "="*35)
+    print("MEJORES PARÁMETROS:")
+    print(best_model)
+    print("="*35)
+    
+    print("\nREPORTE DE CLASIFICACIÓN:")
+    print(classification_report(y_test, pred))
+    
+    print("MATRIZ DE CONFUSIÓN:")
+    print(confusion_matrix(y_test, pred))
+    print("Accuracy:")
+    accuracy = accuracy_score(y_test, pred) # accuracy
+    print(accuracy)
+    # precision
+    print("Precision:")
+    print(precision_score(y_test,pred, average='macro'))
+    
+    # recall
+    print("Recall:")
+    print(recall_score(y_test,pred, average='macro'))
+    
+    # F1-score
+    print("F1-score:")
+    print(f1_score(y_test, pred, average='macro'))
+
+
+def randomizar_gradient(df,col,n):
+    # estudio de la variable a predecir
+    X = df.drop(col, axis=1)
+    y = df[col]
+    
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=0)
+    
+    scaler = StandardScaler()
+    
+    # Identificar columnas numéricas (las que no son dummies de 0 y 1)
+    cols_a_escalar = X_train.select_dtypes(include=['float64', 'int64']).columns
+    
+    X_train_scaled = X_train.copy()
+    X_test_scaled = X_test.copy()
+    
+    X_train_scaled[cols_a_escalar] = scaler.fit_transform(X_train[cols_a_escalar])
+    X_test_scaled[cols_a_escalar] = scaler.transform(X_test[cols_a_escalar])
+    
+    # Definir el "Random" de parámetros a probar
+    param_dist = {
+        'max_depth': [int(x) for x in np.linspace(start = 500, stop = 3000, num = 10)],
+        'n_estimators': [int(x) for x in np.linspace(start = 10, stop = 50, num = 10)],
+        'learning_rate': [0.01, 0.1, 0.2]
+    }
+
+    # Configurar la búsqueda
+    gb = GradientBoostingClassifier()
+    grid_search = RandomizedSearchCV(estimator=gb, param_distributions=param_dist, 
+                            cv=n, scoring='accuracy', n_jobs=-1)
+    
+    # Ejecutar la optimización
+    grid_search.fit(X_train_scaled, y_train)
+    
+    # El mejor modelo encontrado
+    best_model = grid_search.best_estimator_
+    
+    # predicción
+    pred = best_model.predict(X_test_scaled)
+    # Reporte de resultados
+    print("\n" + "="*35)
+    print("MEJORES PARÁMETROS:")
+    print(best_model)
+    print("="*35)
+    
+    print("\nREPORTE DE CLASIFICACIÓN:")
+    print(classification_report(y_test, pred))
+    
+    print("MATRIZ DE CONFUSIÓN:")
+    print(confusion_matrix(y_test, pred))
+    print("Accuracy:")
+    accuracy = accuracy_score(y_test, pred) # accuracy
+    print(accuracy)
+    # precision
+    print("Precision:")
+    print(precision_score(y_test,pred, average='macro'))
+    
+    # recall
+    print("Recall:")
+    print(recall_score(y_test,pred, average='macro'))
+    
+    # F1-score
+    print("F1-score:")
+    print(f1_score(y_test, pred, average='macro'))
