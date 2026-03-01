@@ -10,7 +10,7 @@ import Funciones as f
 # 1. Configuración y Carga de Datos
 @st.cache_data
 def cargar_datos():
-    df = pd.read_csv('ObesityDataSet_clean.csv')
+    df = pd.read_csv('Streamlit/ObesityDataSet_clean.csv')
     return df
 
 # --- NAVEGACIÓN LATERAL ---
