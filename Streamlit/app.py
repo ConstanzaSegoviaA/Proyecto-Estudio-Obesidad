@@ -285,11 +285,11 @@ if seccion == "Aplicación al mundo real":
 # --- SECCIÓN 8: DESAFIOS Y APRENDIZAJES ---
 if seccion == "Desafios y aprendizajes":
     st.title("Desafios y aprendizajes")
-    
-    col1, col2 = st.columns(2)
-    
+            
     st.image("Streamlit/imagen.png")
     st.divider()
+    
+    col1, col2 = st.columns(2)
     
     with col1:
         st.write("Desafios")
