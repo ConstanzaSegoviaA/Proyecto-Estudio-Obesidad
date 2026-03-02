@@ -283,9 +283,10 @@ if seccion == "Aplicación al mundo real":
         st.image("Streamlit/joven.jpg")
 
 # --- SECCIÓN 8: DESAFÍOS Y APRENDIZAJES ---
+
 if seccion == "Desafíos y aprendizajes":
+    
     st.title("Desafíos y aprendizajes")
-            
     st.image("Streamlit/imagen.png")
     st.divider()
     
