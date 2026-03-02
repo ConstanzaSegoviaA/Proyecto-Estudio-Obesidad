@@ -206,5 +206,5 @@ Orden recomendado:
 Notas de reproducibilidad:
 - El notebook `Proyecto_Obesidad.ipynb` genera el dataset `ObesityDataSet_clean.csv` que es el utilizado para el modelo. 
 - También genera los archivos `mi_escalador_entrenado.pkl` para escalar los datos nuevos, `columnas_modelo.pkl` que es el resultado entrenado y `prediccion_obesidad.pkl` que es el modelo utilizado para la predicción y usar en streamlit.
-- Se tienen dos archivos .py que son `Funciones.py` y `modelos.py` utilizados en el notebook `Proyecto_Obesidad.ipynb`, como en el streamlit `app.py` o bien a la página web `https://proyecto-estudio-obesidad.streamlit.app/`.
+- Se tienen dos archivos .py que son `Funciones.py` y `modelos.py` utilizados en el notebook `Proyecto_Obesidad.ipynb`, como en el streamlit `app.py` o bien a la página web [Streamlit_obesidad](https://proyecto-estudio-obesidad.streamlit.app/).
 
