@@ -23,7 +23,7 @@ seccion = st.sidebar.radio("Ir a:", ["Introducción",
                                     "Ajuste de Parámetros",
                                     "Cuestionario de Salud",
                                     "Aplicación al mundo real",
-                                    "Desafios y aprendizajes",
+                                    "Desafíos y aprendizajes",
                                     "Motivación"])
 
 # --- CONFIGURACIÓN DE ESTILO ---
@@ -282,14 +282,13 @@ if seccion == "Aplicación al mundo real":
                     "alimenticios y de condición física.")
         st.image("Streamlit/joven.jpg")
 
-# --- SECCIÓN 8: DESAFÍOS Y APRENDIZAJES ---
+# --- SECCIÓN 8: DESAFiOS Y APRENDIZAJES ---
 
 if seccion == "Desafíos y aprendizajes":
     
     st.title("Desafíos y aprendizajes")
     st.image("Streamlit/imagen.png")
-    st.divider()
-    
+        
     col1, col2 = st.columns(2)
     
     with col1:
