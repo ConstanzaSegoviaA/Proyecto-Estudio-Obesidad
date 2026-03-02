@@ -282,9 +282,9 @@ if seccion == "Aplicación al mundo real":
                     "alimenticios y de condición física.")
         st.image("Streamlit/joven.jpg")
 
-# --- SECCIÓN 8: DESAFIOS Y APRENDIZAJES ---
-if seccion == "Desafios y aprendizajes":
-    st.title("Desafios y aprendizajes")
+# --- SECCIÓN 8: DESAFÍOS Y APRENDIZAJES ---
+if seccion == "Desafíos y aprendizajes":
+    st.title("Desafíos y aprendizajes")
             
     st.image("Streamlit/imagen.png")
     st.divider()
@@ -292,7 +292,7 @@ if seccion == "Desafios y aprendizajes":
     col1, col2 = st.columns(2)
     
     with col1:
-        st.write("Desafios")
+        st.write("Desafíos")
         st.write("- La categorización en 7 niveles (en lugar de solo 3) permite identificar perfiles específicos, lo que sugiere que los tratamientos deben ser segmentado y personalizados, no una solución única, estandarizada.")
         st.write("- Realizar la predicción antes, durante y después del tratamiento o si realiza cambios en su hábitos de vida.")
         st.write("- Implementar pausas activas o bailes entretenidos en colegios, institutos, universidades, empresas y en el hogar.")
